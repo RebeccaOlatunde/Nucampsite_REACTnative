@@ -61,7 +61,7 @@ function RenderCampsite(props) {
         }
     });
 
-    iif (campsite) {
+    if (campsite) {
         return (
             <Animatable.View
                 animation='fadeInDown'
