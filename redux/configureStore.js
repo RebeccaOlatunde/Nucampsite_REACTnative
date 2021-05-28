@@ -31,18 +31,3 @@ export const ConfigureStore = () => {
 
     return { persistor, store };
 };
-
-export const ConfigureStore = () => {
-    const store = createStore(
-        combineReducers({
-            campsites,
-            comments,
-            partners,
-            promotions,
-            favorites
-        }),
-        applyMiddleware(thunk, logger)
-    );
-
-    return store;
-}
