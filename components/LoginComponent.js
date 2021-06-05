@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, StyleSheet , ScrollView, Image} from 'react-native';
 import { Input, CheckBox, Button, Icon } from 'react-native-elements';
 import * as SecureStore from 'expo-secure-store';
 import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 import * as Permissions from 'expo-permissions';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { baseUrl } from '../shared/baseUrl';
@@ -159,11 +160,44 @@ class RegisterTab extends Component {
             });
             if (!capturedImage.cancelled) {
                 console.log(capturedImage);
-                this.setState({imageUrl: capturedImage.uri});
+                this.processImage(capturedImage.uri);
             }
         }
     }
+    
+    processImage = async (imgUri) => {
 
+        const action = [{
+            resize: {
+                width: 400
+            }
+        }];
+
+        const savePNG = {
+            format:ImageManipulator.SaveFormat.PNG
+        }
+        
+        const processedImage = await ImageManipulator.manipulateAsync(imgUri, action,savePNG );
+        console.log(processedImage);        
+    }
+    
+    getImageFromGallery = async () => {
+
+        const cameraRollPermission = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+
+        if (cameraRollPermission.status === 'granted') {
+            const capturedImage = await ImagePicker.launchImageLibraryAsync({
+                allowsEditing: true,
+                aspect: [1, 1]
+            });
+        
+            if (!capturedImage.cancelled) {
+                console.log(capturedImage);
+                this.processImage(capturedImage.uri);
+            }
+        }
+    }
+        
     handleRegister() {
         console.log(JSON.stringify(this.state));
         if (this.state.remember) {
@@ -190,6 +224,10 @@ class RegisterTab extends Component {
                         <Button
                             title='Camera'
                             onPress={this.getImageFromCamera}
+                        />
+                        <Button
+                            title='Gallery'
+                            onPress={this.getImageFromGallery}
                         />
                     </View>
                     <Input
@@ -279,33 +317,34 @@ const Login = createBottomTabNavigator(
 const styles = StyleSheet.create({
     container: {
         justifyContent: 'center',
-        margin: 10
+        margin: 10,
+        marginTop:2
     },
     formIcon: {
         marginRight: 10
     },
     formInput: {
-        padding: 8
+        padding: 0
     },
     formCheckbox: {
-        margin: 8,
+        margin: 4,
         backgroundColor: null
     },
     formButton: {
-        margin: 20,
+        margin:2,
         marginRight: 40,
-        marginLeft: 40
+        marginLeft:40
     },
     imageContainer: {
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-evenly',
-        margin: 10
+        margin:1
     },
     image: {
-        width: 60,
-        height: 60
+        width: 50,
+        height: 50
     }
 });
 
